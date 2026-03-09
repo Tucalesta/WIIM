@@ -1,109 +1,111 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <link rel="manifest" href="manifest.json">
-  <title>Telecomando Wiim</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1e1e1e;
-      color: #fff;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #00d1ff;
-      margin-bottom: 30px;
-    }
-
-    .remote-container {
-      max-width: 500px;
-      margin: 0 auto;
-      background-color: #2a2a2a;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .button {
-      background-color: #007bff;
-      border: none;
-      border-radius: 10px;
-      padding: 18px;
-      font-size: 16px;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      text-align: center;
-    }
-
-    .button:hover {
-      background-color: #0056b3;
-    }
-
-    .volumes {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .button.wide {
-      grid-column: span 3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIIM Remote</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); max-width: 400px; margin: auto; }
+        select, input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-size: 16px; }
+        select { background: #333; color: white; }
+        button { background: #007bff; color: white; cursor: pointer; font-weight: bold; }
+        button.secondary { background: #444; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .vol-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .config-panel { display: none; border-top: 1px solid #444; margin-top: 20px; padding-top: 20px; }
+    </style>
 </head>
 <body>
-  <h1>Telecomando Wiim</h1>
-  <div class="remote-container">
-    <div class="grid">
-      <button class="button" onclick="send('resume')">▶️ Riprendi</button>
-      <button class="button" onclick="send('pause')">⏸️ Pausa</button>
-      <button class="button" onclick="send('onepause')">⏯️ OnePause</button>
-      <button class="button" onclick="send('prev')">⏮️ Indietro</button>
-      <button class="button" onclick="send('stop')">⏹️ Stop</button>
-      <button class="button" onclick="send('next')">⏭️ Avanti</button>
-      <button class="button" onclick="send('mute:1')">🔇 Mute</button>
-      <button class="button" onclick="send('mute:0')">🔊 Unmute</button>
+
+<div class="card">
+    <h2>WIIM Remote</h2>
+    
+    <select id="streamerSelect"></select>
+    <button class="secondary" onclick="toggleConfig()">⚙️ Gestisci Streamer</button>
+
+    <div id="configPanel" class="config-panel">
+        <input type="text" id="newName" placeholder="Nome (es. Salotto)">
+        <input type="text" id="newIP" placeholder="IP (es. 192.168.1.50)">
+        <button onclick="aggiungiStreamer()">Aggiungi / Aggiorna</button>
+        <button class="secondary" onclick="resetLista()" style="background: #6c2d2d;">Reset Lista</button>
     </div>
 
-    <h2 style="margin-top: 30px; font-size: 18px; text-align: center; color: #ccc;">Volume</h2>
-    <div class="volumes">
-      <button class="button" onclick="send('vol:10')">10</button>
-      <button class="button" onclick="send('vol:20')">20</button>
-      <button class="button" onclick="send('vol:30')">30</button>
-      <button class="button" onclick="send('vol:40')">40</button>
-      <button class="button" onclick="send('vol:50')">50</button>
-      <button class="button" onclick="send('vol:60')">60</button>
-      <button class="button" onclick="send('vol:70')">70</button>
-      <button class="button" onclick="send('vol:80')">80</button>
-      <button class="button" onclick="send('vol:90')">90</button>
+    <hr>
+
+    <div class="controls">
+        <button onclick="comando('setPlayerCmd:resume')">▶ Play</button>
+        <button onclick="comando('setPlayerCmd:pause')">⏸ Pause</button>
+        <button onclick="comando('setPlayerCmd:prev')">⏮ Prev</button>
+        <button onclick="comando('setPlayerCmd:next')">⏭ Next</button>
     </div>
-  </div>
 
-  <script>
-    const baseUrl = 'http://192.168.0.229:8080/httpapi.asp?command=setPlayerCmd:';
+    <h4>Volume</h4>
+    <div class="vol-grid">
+        <button onclick="comando('setPlayerCmd:vol:10')">10</button>
+        <button onclick="comando('setPlayerCmd:vol:30')">30</button>
+        <button onclick="comando('setPlayerCmd:vol:50')">50</button>
+        <button onclick="comando('setPlayerCmd:vol:70')">70</button>
+        <button onclick="comando('setPlayerCmd:vol:90')">90</button>
+        <button onclick="comando('setPlayerCmd:mute:1')">🔇</button>
+    </div>
+</div>
 
-    function send(command) {
-      fetch(baseUrl + command)
-        .then(response => {
-          if (!response.ok) {
-            alert('Errore nella richiesta: ' + response.status);
-          }
-        })
-        .catch(err => {
-          alert('Errore di connessione: ' + err.message);
-        });
+<script>
+    // Caricamento iniziale
+    let streamers = JSON.parse(localStorage.getItem('mieiStreamers')) || [];
+    const select = document.getElementById('streamerSelect');
+
+    function aggiornaUI() {
+        if (streamers.length === 0) {
+            select.innerHTML = '<option value="">Nessun dispositivo</option>';
+        } else {
+            select.innerHTML = streamers.map(s => `<option value="${s.ip}">${s.nome} (${s.ip})</option>`).join('');
+        }
     }
-  </script>
+
+    function toggleConfig() {
+        const panel = document.getElementById('configPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function aggiungiStreamer() {
+        const nome = document.getElementById('newName').value;
+        const ip = document.getElementById('newIP').value;
+        if (nome && ip) {
+            streamers.push({ nome, ip });
+            localStorage.setItem('mieiStreamers', JSON.stringify(streamers));
+            aggiornaUI();
+            toggleConfig();
+        }
+    }
+
+    function resetLista() {
+        if(confirm("Cancellare tutti gli streamer salvati?")) {
+            localStorage.removeItem('mieiStreamers');
+            streamers = [];
+            aggiornaUI();
+        }
+    }
+
+    async function comando(cmd) {
+        const ip = select.value;
+        if (!ip) return alert("Configura prima un IP!");
+
+        // Utilizziamo HTTPS sulla porta 443 come nel tuo proxy originale
+        const url = `https://${ip}:443/httpapi.asp?command=${cmd}`;
+        
+        try {
+            // mode: 'no-cors' permette di inviare il comando anche se lo streamer non risponde con gli header corretti
+            await fetch(url, { mode: 'no-cors' });
+        } catch (e) {
+            console.error("Errore invio:", e);
+        }
+    }
+
+    aggiornaUI();
+</script>
+
 </body>
 </html>
