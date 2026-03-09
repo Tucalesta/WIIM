@@ -23,7 +23,7 @@ const http = require('http');
 const https = require('https');
 
 const proxyPort = 8080; // Porta su cui ascolta il proxy
-const wiimHost = '192.168.0.52'; // IP del tuo Wiim Pro 
+const wiimHost = '192.168.0.xxx'; // IP del tuo Wiim Pro 
 const wiimPort = 443;
 
 const server = http.createServer((req, res) => {
