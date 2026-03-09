@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Telecomando Wiim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00d1ff;
+      margin-bottom: 30px;
+    }
+
+    .remote-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: #2a2a2a;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .button {
+      background-color: #007bff;
+      border: none;
+      border-radius: 10px;
+      padding: 18px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      text-align: center;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    .volumes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button.wide {
+      grid-column: span 3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Telecomando Wiim</h1>
+  <div class="remote-container">
+    <div class="grid">
+      <button class="button" onclick="send('resume')">▶️ Riprendi</button>
+      <button class="button" onclick="send('pause')">⏸️ Pausa</button>
+      <button class="button" onclick="send('onepause')">⏯️ OnePause</button>
+      <button class="button" onclick="send('prev')">⏮️ Indietro</button>
+      <button class="button" onclick="send('stop')">⏹️ Stop</button>
+      <button class="button" onclick="send('next')">⏭️ Avanti</button>
+      <button class="button" onclick="send('mute:1')">🔇 Mute</button>
+      <button class="button" onclick="send('mute:0')">🔊 Unmute</button>
+    </div>
+
+    <h2 style="margin-top: 30px; font-size: 18px; text-align: center; color: #ccc;">Volume</h2>
+    <div class="volumes">
+      <button class="button" onclick="send('vol:10')">10</button>
+      <button class="button" onclick="send('vol:20')">20</button>
+      <button class="button" onclick="send('vol:30')">30</button>
+      <button class="button" onclick="send('vol:40')">40</button>
+      <button class="button" onclick="send('vol:50')">50</button>
+      <button class="button" onclick="send('vol:60')">60</button>
+      <button class="button" onclick="send('vol:70')">70</button>
+      <button class="button" onclick="send('vol:80')">80</button>
+      <button class="button" onclick="send('vol:90')">90</button>
+    </div>
+  </div>
+
+  <script>
+    const baseUrl = 'http://192.168.0.229:8080/httpapi.asp?command=setPlayerCmd:';
+
+    function send(command) {
+      fetch(baseUrl + command)
+        .then(response => {
+          if (!response.ok) {
+            alert('Errore nella richiesta: ' + response.status);
+          }
+        })
+        .catch(err => {
+          alert('Errore di connessione: ' + err.message);
+        });
+    }
+  </script>
+</body>
+</html>

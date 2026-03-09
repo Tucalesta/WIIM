@@ -1,0 +1,14 @@
+# Escludi file specifici
+#analisi_dati.xlsx
+#note_private.txt
+
+# Escludi tutti i file in una cartella specifica
+#analisi/
+gitignore/
+
+# Escludi tutti i file con una certa estensione (es. PDF o CSV)
+*.pdf
+*.csv
+*.bak
+*.txt
+*.msi
