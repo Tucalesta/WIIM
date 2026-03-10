@@ -89,20 +89,39 @@
         }
     }
 
-    async function comando(cmd) {
-        const ip = select.value;
-        if (!ip) return alert("Configura prima un IP!");
-
-        // Utilizziamo HTTPS sulla porta 443 come nel tuo proxy originale
-        const url = `https://${ip}:443/httpapi.asp?command=${cmd}`;
-        
-        try {
-            // mode: 'no-cors' permette di inviare il comando anche se lo streamer non risponde con gli header corretti
-            await fetch(url, { mode: 'no-cors' });
-        } catch (e) {
-            console.error("Errore invio:", e);
-        }
-    }
+//   async function comando(cmd) {
+//       const ip = select.value;
+//       if (!ip) return alert("Configura prima un IP!");
+//
+//       // Utilizziamo HTTPS sulla porta 443 come nel tuo proxy originale
+//       const url = `https://${ip}:443/httpapi.asp?command=${cmd}`;
+//       
+//       try {
+//           // mode: 'no-cors' permette di inviare il comando anche se lo streamer non risponde con gli header corretti
+//           await fetch(url, { mode: 'no-cors' });
+//       } catch (e) {
+//           console.error("Errore invio:", e);
+//       }
+//   }
+	
+	async function comando(cmd) {
+		const ip = select.value;
+		if (!ip) return;
+	
+		// Usiamo HTTPS e porta 443 come confermato dal tuo test
+		const url = `https://${ip}:443/httpapi.asp?command=${cmd}`;
+		
+		try {
+			// 'no-cors' è vitale qui per ignorare i blocchi di sicurezza sulla risposta
+			await fetch(url, { 
+				mode: 'no-cors',
+				cache: 'no-cache'
+			});
+			console.log("Comando inviato con successo");
+		} catch (e) {
+			console.error("Errore di connessione:", e);
+		}
+	}
 
     aggiornaUI();
 </script>
